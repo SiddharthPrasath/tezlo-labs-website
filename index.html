@@ -49,13 +49,13 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(245, 245, 242, 0.88);
+      background: rgba(245, 245, 242, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(10,10,10,0.08);
     }
 
     .nav-inner {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 20px;
       height: 64px;
@@ -124,7 +124,7 @@
 
     /* HERO */
     .hero {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 64px 20px 48px;
       display: grid;
@@ -430,7 +430,7 @@
 
     /* SERVICES SECTION */
     .section {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 72px 20px;
     }
@@ -551,7 +551,7 @@
       border-radius: 28px;
       padding: 48px 44px;
       margin: 0 32px;
-      max-width: 1060px;
+      max-width: 1232px;
       margin: 0 auto;
       margin-bottom: 80px;
     }
@@ -619,18 +619,27 @@
     }
 
     /* TOOLS SECTION */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: 5fr 7fr;
-      gap: 16px;
-      align-items: start;
+    .tools-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 32px;
+      gap: 32px;
     }
 
-    .tools-left {}
+    .tools-header-left {}
 
-    .tools-right {
+    .tools-header-sub {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 340px;
+      margin-top: 8px;
+    }
+
+    .tools-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
 
@@ -642,29 +651,42 @@
       flex-direction: column;
       gap: 10px;
       box-shadow: 0 2px 12px rgba(10,10,10,0.06);
-      transition: transform 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
     }
 
-    .tool-card:hover { transform: translateY(-3px); }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(10,10,10,0.1);
+    }
 
     .tool-card.featured {
       background: var(--lime);
-      grid-column: 1 / 3;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: 24px;
+      padding: 28px 32px;
     }
 
+    .tool-card.featured .tool-info { flex: 1; }
+
     .tool-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 18px;
+      flex-shrink: 0;
     }
 
     .tool-card.featured .tool-logo {
       background: rgba(10,10,10,0.1);
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
     }
 
     .tool-name {
@@ -675,10 +697,30 @@
       color: var(--ink);
     }
 
+    .tool-card.featured .tool-name { font-size: 18px; }
+
     .tool-desc {
       font-size: 12px;
       line-height: 1.6;
       color: var(--muted);
+    }
+
+    .tool-card.featured .tool-desc {
+      color: rgba(10,10,10,0.65);
+      font-size: 13px;
+      max-width: 520px;
+    }
+
+    .tool-badge {
+      flex-shrink: 0;
+      background: var(--ink);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
     }
 
     /* CTA SECTION */
@@ -689,7 +731,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 1060px;
+      max-width: 1232px;
       margin: 0 auto 80px;
       gap: 40px;
     }
@@ -753,43 +795,53 @@
 
     /* FOOTER */
     footer {
-      border-top: 1px solid rgba(10,10,10,0.08);
-      padding: 48px 0 32px;
+      background: var(--ink);
     }
 
     .footer-inner {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 40px;
+      padding: 56px 24px 40px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      align-items: start;
     }
 
     .footer-brand {}
 
     .footer-tagline {
       font-size: 13px;
-      color: var(--muted);
-      margin-top: 10px;
-      max-width: 220px;
-      line-height: 1.6;
+      color: rgba(255,255,255,0.45);
+      margin-top: 12px;
+      max-width: 260px;
+      line-height: 1.7;
     }
 
-    .footer-links {
-      display: flex;
-      gap: 56px;
+    .footer-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: color 0.18s ease;
     }
+
+    .footer-email:hover { color: #fff; }
+
+    .footer-links { display: contents; }
 
     .footer-col h4 {
       font-family: 'Syne', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 16px;
     }
 
     .footer-col ul {
@@ -801,19 +853,18 @@
 
     .footer-col ul a {
       font-size: 13px;
-      color: var(--ink);
+      color: rgba(255,255,255,0.55);
       text-decoration: none;
-      opacity: 0.65;
-      transition: opacity 0.18s ease;
+      transition: color 0.18s ease;
     }
 
-    .footer-col ul a:hover { opacity: 1; }
+    .footer-col ul a:hover { color: #fff; }
 
     .footer-bottom {
-      max-width: 1100px;
-      margin: 32px auto 0;
-      padding: 24px 32px 0;
-      border-top: 1px solid rgba(10,10,10,0.06);
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 24px 32px;
+      border-top: 1px solid rgba(255,255,255,0.08);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -821,22 +872,181 @@
 
     .footer-copy {
       font-size: 12px;
-      color: var(--muted);
+      color: rgba(255,255,255,0.28);
     }
+
+    footer .logo { color: #fff; }
+    footer .logo-bracket { background: var(--lime); color: var(--ink); }
 
     /* SVG icon helpers */
     .icon { display: inline-block; }
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-right { display: none; }
-      .services-grid { grid-template-columns: 1fr; }
-      .process-steps { grid-template-columns: 1fr 1fr; }
+    /* ── Hamburger button (mobile nav) ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── Mobile drawer ── */
+    .nav-drawer {
+      display: none;
+      flex-direction: column;
+      padding: 16px 20px 24px;
+      gap: 4px;
+      border-top: 1px solid rgba(10,10,10,0.08);
+      background: var(--surface);
+    }
+
+    .nav-drawer.open { display: flex; }
+
+    .nav-drawer a {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(10,10,10,0.06);
+      opacity: 0.7;
+    }
+
+    .nav-drawer a:last-child { border-bottom: none; opacity: 1; font-weight: 600; }
+    .nav-drawer a:hover { opacity: 1; }
+
+    /* ── Large tablet (≤1024px) ── */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .process-steps { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .cta-section { padding: 52px 40px; }
+      .footer-links { gap: 36px; }
+    }
+
+    /* ── Tablet (≤768px) ── */
+    @media (max-width: 768px) {
+      /* Nav */
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+
+      /* Hero */
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        padding: 48px 20px 40px;
+      }
+
+      h1.hero-headline { font-size: clamp(36px, 8vw, 52px); }
+
+      /* Show hero cards in a compact 2x2 on tablet */
+      .hero-right {
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+      }
+
+      .hr-col:last-child { margin-top: 0; }
+
+      .stats-strip { gap: 24px; }
+
+      /* Services */
+      .services-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+
+      /* Process */
+      .process-wrapper { padding: 36px 28px; border-radius: 20px; }
+      .process-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .process-sub { text-align: left; max-width: 100%; }
+      .process-steps { grid-template-columns: 1fr 1fr; gap: 6px; }
+
+      /* Tools */
+      .tools-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .tools-grid { grid-template-columns: 1fr 1fr; }
+      .tool-card.featured { flex-direction: column; }
+
+      /* CTA */
+      .cta-section {
+        flex-direction: column;
+        padding: 44px 32px;
+        gap: 28px;
+        border-radius: 20px;
+      }
+
+      /* Footer */
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+
+    /* ── Mobile (≤480px) ── */
+    @media (max-width: 480px) {
+      /* Nav */
+      .nav-inner { padding: 0 16px; }
+
+      /* Hero */
+      .hero { padding: 36px 16px 32px; gap: 32px; }
+      h1.hero-headline { font-size: clamp(32px, 9vw, 44px); }
+      .hero-sub { font-size: 14px; }
+
+      .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .btn-primary { width: 100%; justify-content: center; }
+
+      .stats-strip {
+        flex-wrap: wrap;
+        gap: 20px 32px;
+        margin-top: 36px;
+        padding-top: 24px;
+      }
+
+      /* Hero cards: stack into a single scrollable column */
+      .hero-right {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .hr-col { gap: 10px; }
+      .hcard { padding: 20px; }
+      .hcard-dark { min-height: auto; }
+      .hcard-white { min-height: auto; }
+
+      /* Services */
+      .services-grid { grid-template-columns: 1fr; gap: 10px; }
+      .service-card { padding: 24px; }
+
+      /* Process */
+      .process-wrapper { padding: 28px 20px; margin: 0; border-radius: 16px; }
+      .process-steps { grid-template-columns: 1fr; gap: 6px; }
+      .process-step { padding: 20px 18px; }
+
+      /* Tools */
       .tools-grid { grid-template-columns: 1fr; }
-      .cta-section { flex-direction: column; padding: 48px 32px; }
-      .footer-inner { flex-direction: column; }
-      .footer-links { flex-wrap: wrap; gap: 32px; }
+      .tool-card.featured { flex-direction: column; }
+
+      /* CTA */
+      .cta-section { padding: 36px 24px; border-radius: 16px; }
+      .cta-right { width: 100%; }
+      .btn-dark { width: 100%; justify-content: center; }
+
+      /* Footer */
+      .footer-inner { grid-template-columns: 1fr; padding: 40px 16px 28px; }
+      .footer-brand { grid-column: auto; }
+      .footer-bottom { padding: 16px 16px 24px; flex-direction: column; gap: 6px; text-align: center; }
+
+      /* Section padding */
+      .section { padding: 56px 16px; }
     }
   </style>
 </head>
@@ -854,6 +1064,15 @@
         <li><a href="#tools">Tools</a></li>
         <li><a href="#contact" class="nav-cta">Let's talk</a></li>
       </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer">
+      <a href="#services" class="drawer-link">Services</a>
+      <a href="#process" class="drawer-link">How we work</a>
+      <a href="#tools" class="drawer-link">Tools</a>
+      <a href="#contact" class="drawer-link">Let's talk →</a>
     </div>
   </nav>
 
@@ -991,7 +1210,7 @@
   </section>
 
   <!-- PROCESS -->
-  <section id="process" style="padding: 0 20px 72px; max-width: 1100px; margin: 0 auto;">
+  <section id="process" style="padding: 0 20px 72px; max-width: 1280px; margin: 0 auto;">
     <div class="process-wrapper">
       <div class="process-header">
         <div>
@@ -1027,48 +1246,47 @@
 
   <!-- TOOLS WE USE -->
   <section id="tools" class="section" style="padding-top: 0;">
-    <div class="section-label">Tech stack</div>
-    <div class="section-title">The tools we know inside out.</div>
-    <div class="tools-grid">
-      <div class="tools-left">
-        <p style="font-size:14px; line-height:1.75; color:var(--muted); max-width:340px; margin-bottom:28px;">We're platform-agnostic but opinionated. We'll pick the right tool for your problem — not the one that's easiest for us.</p>
-        <a href="#contact" class="btn-primary" style="width: fit-content;">
-          Tell us what you need
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="section-label reveal">Tech stack</div>
+        <div class="section-title reveal reveal-d1" style="margin-bottom:0;">The tools we know inside out.</div>
       </div>
-      <div class="tools-right">
-        <div class="tool-card featured">
-          <div class="tool-logo">⚙️</div>
+      <p class="tools-header-sub reveal reveal-d2">We're platform-agnostic but opinionated. We pick the right tool for your problem — not the one that's easiest for us.</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card featured reveal">
+        <div class="tool-logo">⚙️</div>
+        <div class="tool-info">
           <div class="tool-name">Retool</div>
-          <div class="tool-desc">Our primary weapon for internal tools. We're among the most experienced Retool builders in the market — database queries, custom components, REST & GraphQL integrations.</div>
+          <div class="tool-desc">Our primary platform for internal tools — database queries, custom components, REST & GraphQL integrations, and multi-step workflows. We've shipped dozens of production Retool apps.</div>
         </div>
-        <div class="tool-card">
-          <div class="tool-logo">🔗</div>
-          <div class="tool-name">n8n / Make</div>
-          <div class="tool-desc">Workflow automation without writing a line of code when you don't need to.</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-logo">📊</div>
-          <div class="tool-name">Metabase</div>
-          <div class="tool-desc">Self-hosted BI that your ops team can actually use themselves.</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-logo">⚡</div>
-          <div class="tool-name">Custom APIs</div>
-          <div class="tool-desc">Node.js / Python backends when off-the-shelf tools hit their limits.</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-logo">🗃️</div>
-          <div class="tool-name">PostgreSQL / Supabase</div>
-          <div class="tool-desc">Solid, predictable data layers that scale with your team.</div>
-        </div>
+        <div class="tool-badge">Primary</div>
+      </div>
+      <div class="tool-card reveal reveal-d1">
+        <div class="tool-logo">🔗</div>
+        <div class="tool-name">n8n / Make</div>
+        <div class="tool-desc">Workflow automation without writing code when you don't need to.</div>
+      </div>
+      <div class="tool-card reveal reveal-d2">
+        <div class="tool-logo">📊</div>
+        <div class="tool-name">Metabase</div>
+        <div class="tool-desc">Self-hosted BI that your ops team can actually use themselves.</div>
+      </div>
+      <div class="tool-card reveal reveal-d3">
+        <div class="tool-logo">⚡</div>
+        <div class="tool-name">Custom APIs</div>
+        <div class="tool-desc">Node.js / Python backends when off-the-shelf tools hit their limits.</div>
+      </div>
+      <div class="tool-card reveal reveal-d4">
+        <div class="tool-logo">🗃️</div>
+        <div class="tool-name">PostgreSQL / Supabase</div>
+        <div class="tool-desc">Solid, predictable data layers that scale with your team.</div>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section id="contact" style="padding: 0 20px 72px; max-width: 1100px; margin: 0 auto;">
+  <section id="contact" style="padding: 0 20px 72px; max-width: 1280px; margin: 0 auto;">
     <div class="cta-section reveal">
       <div class="cta-left">
         <div class="cta-title">Ready to stop doing things manually?</div>
@@ -1089,36 +1307,54 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="logo">tezlo <span class="logo-bracket">labs</span></div>
-        <div class="footer-tagline">Internal tools & automation for teams that want to move faster.</div>
+        <div class="footer-tagline">Internal tools &amp; automation for teams that want to move faster without the overhead.</div>
+        <a href="mailto:hello@tezlolabs.com" class="footer-email">
+          hello@tezlolabs.com
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
       <div class="footer-links">
         <div class="footer-col">
           <h4>Services</h4>
           <ul>
-            <li><a href="#">Retool Development</a></li>
-            <li><a href="#">Process Automation</a></li>
-            <li><a href="#">Data & Analytics</a></li>
-            <li><a href="#">Custom Internal Tools</a></li>
+            <li><a href="#services">Retool Development</a></li>
+            <li><a href="#services">Process Automation</a></li>
+            <li><a href="#services">Data &amp; Analytics</a></li>
+            <li><a href="#services">Custom Internal Tools</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Company</h4>
           <ul>
-            <li><a href="#">About</a></li>
-            <li><a href="#">How we work</a></li>
-            <li><a href="#">Case studies</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="#process">How we work</a></li>
+            <li><a href="#tools">Tech stack</a></li>
+            <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2024 Tezlo Labs. All rights reserved.</div>
-      <div class="footer-copy">hello@tezlolabs.com</div>
+      <div class="footer-copy">© 2026 Tezlo Labs. All rights reserved.</div>
+      <div class="footer-copy">Built for teams that move fast.</div>
     </div>
   </footer>
 
   <script>
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      drawer.classList.toggle('open');
+    });
+    // Close drawer when a link is clicked
+    drawer.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        drawer.classList.remove('open');
+      });
+    });
+
     // Scroll reveal observer
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {

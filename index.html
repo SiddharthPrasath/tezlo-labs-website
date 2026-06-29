@@ -3,1381 +3,935 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tezlo Labs — Internal Tools Agency</title>
+  <title>Tezlo Labs — Custom Software Development</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --lime: #C8FF57;
-      --lime-dark: #a8e030;
-      --ink: #0A0A0A;
-      --ink-soft: #1a1a1a;
-      --muted: #6b7280;
-      --surface: #F5F5F2;
-      --card-dark: #0A0A0A;
+      --bg:    #F5F4F0;
+      --surf:  #FFFFFF;
+      --ink:   #0D0C1A;
+      --mu:    rgba(13,12,26,.46);
+      --mu2:   rgba(13,12,26,.28);
+      --bd:    rgba(13,12,26,.09);
+      --bd2:   rgba(13,12,26,.16);
+      --v:     #6D28D9;
+      --b:     #2563EB;
+      --grad:  linear-gradient(135deg,#6D28D9 0%,#2563EB 100%);
+      --gtxt:  linear-gradient(135deg,#7C3AED 0%,#3B82F6 100%);
+      --sh:    0 1px 4px rgba(13,12,26,.06),0 8px 28px rgba(13,12,26,.07);
+      --sh2:   0 2px 6px rgba(13,12,26,.08),0 16px 48px rgba(13,12,26,.12);
+      --font:  'DM Sans',sans-serif;
+      --disp:  'Syne',sans-serif;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* SCROLL PROGRESS */
+    #sbar{position:fixed;top:0;left:0;height:2px;background:var(--grad);z-index:9999;width:0%;transition:width .08s linear}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--surface);
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-    }
+    /* BG — very subtle orbs */
+    .bgl{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(140px);will-change:transform}
+    .o1{width:700px;height:700px;background:radial-gradient(circle,rgba(109,40,217,.06) 0%,transparent 70%);top:-250px;right:-150px;animation:da 22s ease-in-out infinite alternate}
+    .o2{width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.04) 0%,transparent 70%);bottom:20%;left:-180px;animation:db 26s ease-in-out infinite alternate}
+    @keyframes da{from{transform:translate(0,0)}to{transform:translate(-60px,80px)}}
+    @keyframes db{from{transform:translate(0,0)}to{transform:translate(80px,-60px)}}
 
-    h1, h2, h3, .display {
-      font-family: 'Syne', sans-serif;
-    }
-
-    /* grain overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.025;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    }
+    /* LAYOUT */
+    .wrap{max-width:1280px;margin:0 auto;padding:0 24px}
 
     /* NAV */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(245, 245, 242, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(10,10,10,0.08);
-    }
+    #nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .3s ease,border-color .3s ease,box-shadow .3s ease}
+    #nav.sc{background:rgba(245,244,240,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);box-shadow:0 1px 12px rgba(13,12,26,.05)}
+    .ni{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.02em;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px}
+    .lchip{display:inline-flex;align-items:center;justify-content:center;background:var(--grad);color:#fff;padding:2px 8px;border-radius:5px;font-size:13px;font-weight:700}
+    .nlinks{display:flex;align-items:center;gap:36px;list-style:none}
+    .nlinks a{font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;opacity:.52;transition:opacity .18s ease}
+    .nlinks a:hover{opacity:1}
+    .ncta{background:var(--ink)!important;color:#fff!important;opacity:1!important;padding:9px 20px;border-radius:8px;font-weight:600!important;font-size:13px!important;border:none;font-family:var(--font);box-shadow:0 2px 12px rgba(13,12,26,.18);transition:transform .18s ease,box-shadow .18s ease!important}
+    .ncta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(13,12,26,.22)!important}
+    .ncta:active{transform:translateY(0)}
+    .ncta:focus-visible{outline:2px solid var(--v);outline-offset:3px}
+    .hburg{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:4px;cursor:pointer}
+    .hburg span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:transform .22s ease,opacity .22s ease}
+    .hburg.op span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hburg.op span:nth-child(2){opacity:0}
+    .hburg.op span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .ndraw{display:none;flex-direction:column;padding:12px 24px 20px;gap:2px;background:rgba(245,244,240,.97);backdrop-filter:blur(20px);border-top:1px solid var(--bd)}
+    .ndraw.op{display:flex}
+    .ndraw a{font-size:15px;font-weight:500;color:var(--ink);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--bd);opacity:.6;transition:opacity .18s ease}
+    .ndraw a:last-child{border-bottom:none;opacity:1;font-weight:600;background:var(--gtxt);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .ndraw a:hover{opacity:1}
 
-    .nav-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 20px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    /* FLOATING CTA */
+    #fcta{position:fixed;bottom:28px;right:28px;z-index:50;background:var(--ink);color:#fff;padding:12px 22px;border-radius:100px;font-size:13px;font-weight:600;font-family:var(--font);display:flex;align-items:center;gap:7px;box-shadow:0 4px 20px rgba(13,12,26,.22);text-decoration:none;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .3s ease,transform .3s ease,box-shadow .2s ease;cursor:pointer}
+    #fcta.sh{opacity:1;transform:translateY(0);pointer-events:auto}
+    #fcta:hover{box-shadow:0 8px 28px rgba(13,12,26,.28);transform:translateY(-1px)}
+    #fcta:active{transform:scale(.97)}
+    #fcta:focus-visible{outline:2px solid var(--v);outline-offset:3px}
 
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: -0.01em;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .logo-bracket {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--lime);
-      color: var(--ink);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 36px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink);
-      text-decoration: none;
-      opacity: 0.65;
-      transition: opacity 0.18s ease;
-    }
-
-    .nav-links a:hover { opacity: 1; }
-
-    .nav-cta {
-      background: var(--ink);
-      color: #fff !important;
-      opacity: 1 !important;
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      transition: background 0.18s ease, transform 0.15s ease !important;
-    }
-
-    .nav-cta:hover {
-      background: var(--ink-soft);
-      transform: translateY(-1px);
-    }
+    /* GRAD TEXT */
+    .gt{background:var(--gtxt);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
     /* HERO */
-    .hero {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 64px 20px 48px;
-      display: grid;
-      grid-template-columns: 5fr 6fr;
-      gap: 48px;
-      align-items: start;
-    }
-
-    .hero-left {}
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--lime);
-      color: var(--ink);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 5px 10px;
-      border-radius: 100px;
-      margin-bottom: 24px;
-    }
-
-    .hero-tag::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--ink);
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    h1.hero-headline {
-      font-size: clamp(40px, 5vw, 62px);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 24px;
-    }
-
-    .hero-sub {
-      font-size: 15px;
-      line-height: 1.75;
-      color: var(--muted);
-      max-width: 400px;
-      margin-bottom: 36px;
-    }
-
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .btn-primary {
-      background: var(--ink);
-      color: #fff;
-      padding: 13px 26px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(10,10,10,0.18), 0 1px 4px rgba(10,10,10,0.12);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(10,10,10,0.22), 0 2px 6px rgba(10,10,10,0.12);
-    }
-
-    .btn-primary:active { transform: translateY(0); }
-
-    .btn-secondary {
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      opacity: 0.65;
-      transition: opacity 0.18s ease;
-    }
-
-    .btn-secondary:hover { opacity: 1; }
-
-    /* STATS STRIP */
-    .stats-strip {
-      margin-top: 56px;
-      padding-top: 32px;
-      border-top: 1px solid rgba(10,10,10,0.1);
-      display: flex;
-      gap: 40px;
-    }
-
-    .stat-item {}
-
-    .stat-number {
-      font-family: 'Syne', sans-serif;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--ink);
-      line-height: 1;
-      display: flex;
-      align-items: baseline;
-      gap: 2px;
-    }
-
-    .stat-number span {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-left: 2px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* HERO CARDS — 2-col staggered layout */
-    .hero-right {
-      display: grid;
-      grid-template-columns: 57% 43%;
-      gap: 12px;
-      align-items: start;
-    }
-
-    .hr-col {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* right column drops lower, matching reference stagger */
-    .hr-col:last-child { margin-top: 36px; }
-
-    .hcard {
-      border-radius: 20px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  box-shadow 0.26s ease;
-    }
-
-    .hcard:hover { transform: translateY(-5px); }
-
-    /* Card variants */
-    .hcard-dark {
-      background: var(--card-dark);
-      color: #fff;
-      min-height: 240px;
-    }
-
-    .hcard-cream {
-      background: #F5EFDC;
-      color: var(--ink);
-    }
-
-    .hcard-green {
-      background: var(--lime);
-      color: var(--ink);
-    }
-
-    .hcard-white {
-      background: #fff;
-      color: var(--ink);
-      box-shadow: 0 2px 16px rgba(10,10,10,0.07), 0 1px 4px rgba(10,10,10,0.04);
-      min-height: 210px;
-    }
-
-    /* Shared card internals */
-    .hcard-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      opacity: 0.35;
-      letter-spacing: 0.06em;
-    }
-
-    .hcard-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .hcard-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hcard-dark .hcard-icon   { background: rgba(255,255,255,0.1); }
-    .hcard-cream .hcard-icon  { background: rgba(10,10,10,0.07); }
-    .hcard-green .hcard-icon  { background: rgba(10,10,10,0.1); }
-    .hcard-white .hcard-icon  { background: var(--surface); }
-
-    .hcard-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-
-    .hcard-sub {
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    .hcard-dark .hcard-sub   { opacity: 0.55; }
-    .hcard-cream .hcard-sub  { opacity: 0.65; }
-    .hcard-green .hcard-sub  { opacity: 0.7; }
-    .hcard-white .hcard-sub  { color: var(--muted); }
-
-    .hcard-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 100px;
-    }
-
-    .hcard-dark .hcard-pill  { background: rgba(200,255,87,0.15); color: var(--lime); }
-    .hcard-cream .hcard-pill { background: rgba(10,10,10,0.09); color: var(--ink); }
-    .hcard-green .hcard-pill { background: rgba(10,10,10,0.12); color: var(--ink); }
-    .hcard-white .hcard-pill { background: var(--surface); color: var(--muted); }
-
-    .hcard-btn {
-      margin-top: auto;
-      padding: 9px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.18s ease, transform 0.15s ease;
-      text-align: center;
-      border: none;
-    }
-
-    .hcard-btn:active { transform: scale(0.97); }
-
-    .hcard-dark .hcard-btn  {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.16);
-    }
-    .hcard-dark .hcard-btn:hover  { background: rgba(255,255,255,0.2); }
-
-    .hcard-white .hcard-btn {
-      background: var(--ink);
-      color: #fff;
-    }
-    .hcard-white .hcard-btn:hover { background: var(--ink-soft); }
-
-    /* SCROLL REVEAL */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reveal-d1 { transition-delay: 0.08s; }
-    .reveal-d2 { transition-delay: 0.16s; }
-    .reveal-d3 { transition-delay: 0.24s; }
-    .reveal-d4 { transition-delay: 0.32s; }
-
-    /* Card-specific stagger for hero */
-    .hcard-reveal {
-      opacity: 0;
-      transform: translateY(20px) scale(0.98);
-      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .hcard-reveal.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* SERVICES SECTION */
-    .section {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 72px 20px;
-    }
-
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-label::before {
-      content: '';
-      display: inline-block;
-      width: 24px;
-      height: 1px;
-      background: var(--muted);
-    }
-
-    .section-title {
-      font-size: clamp(32px, 4vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-      color: var(--ink);
-      max-width: 560px;
-      margin-bottom: 56px;
-    }
-
-    /* SERVICES GRID */
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .service-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 2px 16px rgba(10,10,10,0.06), 0 1px 3px rgba(10,10,10,0.04);
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
-    }
-
-    .service-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(10,10,10,0.1), 0 2px 8px rgba(10,10,10,0.06);
-    }
-
-    .service-card:first-child {
-      background: var(--card-dark);
-      color: #fff;
-    }
-
-    .service-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface);
-    }
-
-    .service-card:first-child .service-icon {
-      background: rgba(200, 255, 87, 0.15);
-    }
-
-    .service-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-
-    .service-desc {
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    .service-card:first-child .service-desc {
-      color: rgba(255,255,255,0.55);
-    }
-
-    .service-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: auto;
-    }
-
-    .tag {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 100px;
-      background: var(--surface);
-      color: var(--muted);
-    }
-
-    .service-card:first-child .tag {
-      background: rgba(200, 255, 87, 0.12);
-      color: var(--lime);
-    }
-
-    /* PROCESS SECTION */
-    .process-wrapper {
-      background: var(--card-dark);
-      border-radius: 28px;
-      padding: 48px 44px;
-      margin: 0 32px;
-      max-width: 1232px;
-      margin: 0 auto;
-      margin-bottom: 80px;
-    }
-
-    .process-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 48px;
-    }
-
-    .process-title {
-      font-size: clamp(28px, 3.5vw, 42px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-
-    .process-sub {
-      font-size: 14px;
-      color: rgba(255,255,255,0.45);
-      max-width: 260px;
-      line-height: 1.6;
-      text-align: right;
-    }
-
-    .process-steps {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-    }
-
-    .process-step {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 28px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transition: background 0.2s ease;
-    }
-
-    .process-step:hover { background: rgba(255,255,255,0.08); }
-
-    .step-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--lime);
-      letter-spacing: 0.08em;
-    }
-
-    .step-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.01em;
-    }
-
-    .step-desc {
-      font-size: 12px;
-      line-height: 1.65;
-      color: rgba(255,255,255,0.45);
-    }
-
-    /* TOOLS SECTION */
-    .tools-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 32px;
-      gap: 32px;
-    }
-
-    .tools-header-left {}
-
-    .tools-header-sub {
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--muted);
-      max-width: 340px;
-      margin-top: 8px;
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .tool-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 2px 12px rgba(10,10,10,0.06);
-      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
-    }
-
-    .tool-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 28px rgba(10,10,10,0.1);
-    }
-
-    .tool-card.featured {
-      background: var(--lime);
-      grid-column: 1 / -1;
-      flex-direction: row;
-      align-items: center;
-      gap: 24px;
-      padding: 28px 32px;
-    }
-
-    .tool-card.featured .tool-info { flex: 1; }
-
-    .tool-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--surface);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .tool-card.featured .tool-logo {
-      background: rgba(10,10,10,0.1);
-      width: 48px;
-      height: 48px;
-      font-size: 22px;
-    }
-
-    .tool-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--ink);
-    }
-
-    .tool-card.featured .tool-name { font-size: 18px; }
-
-    .tool-desc {
-      font-size: 12px;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
-    .tool-card.featured .tool-desc {
-      color: rgba(10,10,10,0.65);
-      font-size: 13px;
-      max-width: 520px;
-    }
-
-    .tool-badge {
-      flex-shrink: 0;
-      background: var(--ink);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 100px;
-    }
-
-    /* CTA SECTION */
-    .cta-section {
-      background: var(--lime);
-      border-radius: 28px;
-      padding: 64px 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1232px;
-      margin: 0 auto 80px;
-      gap: 40px;
-    }
-
-    .cta-left {}
-
-    .cta-title {
-      font-size: clamp(32px, 4vw, 52px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      line-height: 1.05;
-      max-width: 480px;
-    }
-
-    .cta-sub {
-      font-size: 15px;
-      color: rgba(10,10,10,0.6);
-      margin-top: 16px;
-      line-height: 1.6;
-    }
-
-    .cta-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      flex-shrink: 0;
-    }
-
-    .btn-dark {
-      background: var(--ink);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(10,10,10,0.25);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .btn-dark:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
-    }
-
-    .btn-outline {
-      color: var(--ink);
-      font-size: 13px;
-      font-weight: 500;
-      text-decoration: none;
-      opacity: 0.65;
-      transition: opacity 0.18s ease;
-    }
-
-    .btn-outline:hover { opacity: 1; }
+    .hero{position:relative;z-index:1;padding:128px 0 88px;display:flex;align-items:center}
+    .hgrid{display:grid;grid-template-columns:1fr 1.3fr;gap:56px;align-items:start}
+    h1.hh{font-family:var(--disp);font-size:clamp(40px,5vw,66px);font-weight:700;line-height:1.06;letter-spacing:-.03em;color:var(--ink);margin-bottom:24px}
+    .hsub{font-size:16px;line-height:1.75;color:var(--mu);max-width:440px;margin-bottom:40px;font-weight:400}
+    .hacts{display:flex;align-items:center;gap:16px;margin-bottom:60px}
+
+    /* BUTTONS */
+    .btn-dark{background:var(--ink);color:#fff;padding:14px 28px;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:none;box-shadow:0 2px 12px rgba(13,12,26,.2);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease}
+    .btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,12,26,.25)}
+    .btn-dark:active{transform:translateY(0) scale(.98)}
+    .btn-dark:focus-visible{outline:2px solid var(--v);outline-offset:3px}
+    .btn-ghost{color:var(--ink);font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;opacity:.48;background:none;border:none;font-family:var(--font);transition:opacity .18s ease;cursor:pointer}
+    .btn-ghost:hover{opacity:1}
+    .btn-ghost:focus-visible{outline:2px solid var(--v);border-radius:4px}
+
+    /* STATS */
+    .sbar{display:flex;gap:44px;padding-top:40px;border-top:1px solid var(--bd)}
+    .sv{font-family:var(--disp);font-size:30px;font-weight:700;letter-spacing:-.025em;line-height:1;display:flex;align-items:baseline;gap:3px;color:var(--ink)}
+    .su{font-size:13px;font-weight:400;color:var(--mu)}
+    .sl{font-size:12px;color:var(--mu);margin-top:5px;font-weight:400}
+
+    /* HERO VISUAL */
+    .hvisual{position:relative;padding:6px 44px 32px 24px}
+    .hv-main{background:#12132A;border-radius:18px;overflow:hidden;box-shadow:0 8px 56px rgba(13,12,26,.24),0 2px 8px rgba(13,12,26,.14);display:flex;flex-direction:column}
+
+    /* Window chrome */
+    .hv-chrome{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.18);flex-shrink:0}
+    .hv-dots{display:flex;gap:5px}
+    .hd{display:block;width:9px;height:9px;border-radius:50%}
+    .hv-wintitle{flex:1;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.24);letter-spacing:.03em}
+    .hv-badge-live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#6EE7B7;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:5px;padding:3px 8px}
+    .hv-live-dot{width:5px;height:5px;border-radius:50%;background:#10B981;box-shadow:0 0 6px rgba(16,185,129,.7);animation:sp 2s ease-in-out infinite;flex-shrink:0}
+    @keyframes sp{0%,100%{box-shadow:0 0 6px rgba(16,185,129,.6)}50%{box-shadow:0 0 14px rgba(16,185,129,.9)}}
+
+    /* Sidebar + content */
+    .hv-split{display:flex;min-height:0;flex:1}
+    .hv-side{width:54px;border-right:1px solid rgba(255,255,255,.07);padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;background:rgba(0,0,0,.1)}
+    .hv-nav{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:default;transition:background .15s}
+    .hv-nav.active{background:rgba(109,40,217,.28)}
+    .hv-nav svg{flex-shrink:0}
+    .hv-nav-sep{width:26px;height:1px;background:rgba(255,255,255,.07);margin:5px 0}
+    .hv-content{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+
+    /* KPI cards */
+    .hv-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .hv-kpi{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 14px}
+    .hv-kpi-val{font-family:var(--disp);font-size:22px;font-weight:700;color:#fff;line-height:1}
+    .hv-kpi-lbl{font-size:9px;color:rgba(255,255,255,.3);margin-top:5px;text-transform:uppercase;letter-spacing:.07em;font-weight:500}
+    .hv-kpi-chg{font-size:11px;font-weight:700;color:#6EE7B7;margin-top:7px}
+    .hv-kpi-chg.neutral{color:rgba(255,255,255,.32)}
+
+    /* Bar chart */
+    .hv-chart-hd{font-size:9px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    .hv-bars-row{display:flex;align-items:flex-end;gap:6px;height:100px}
+    .hv-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%}
+    .hv-bar-track{flex:1;width:100%;background:rgba(255,255,255,.06);border-radius:4px 4px 0 0;overflow:hidden;display:flex;align-items:flex-end}
+    .hv-bar-f{width:100%;border-radius:4px 4px 0 0;animation:barRise 1.5s cubic-bezier(.22,1,.36,1) both;transform-origin:bottom}
+    @keyframes barRise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+    .hv-bar-x{font-size:9px;color:rgba(255,255,255,.18);font-weight:600;letter-spacing:.03em}
+    .hv-bar-x.cur{color:rgba(255,255,255,.6)}
+
+    /* Status footer */
+    .hv-statusrow{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+    .hv-sitem{display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.3);font-weight:500}
+    .hv-sdot{width:6px;height:6px;border-radius:50%;background:#10B981;box-shadow:0 0 6px rgba(16,185,129,.6);flex-shrink:0}
+    .hv-chips-sm{display:flex;gap:4px}
+    .hv-chip-sm{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.32);border:1px solid rgba(255,255,255,.1)}
+
+    /* Floating badges */
+    .fc{position:absolute;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px 18px;box-shadow:0 4px 20px rgba(13,12,26,.1),0 1px 4px rgba(13,12,26,.06);animation:float 4s ease-in-out infinite alternate}
+    .fc1{top:4px;right:0;min-width:148px;animation-delay:0s}
+    .fc2{bottom:16px;left:0;min-width:136px;animation-delay:1.5s}
+    .fc3{top:48%;right:0;transform:translateY(-50%);min-width:120px;animation-delay:.8s}
+    @keyframes float{from{transform:translateY(0)}to{transform:translateY(-9px)}}
+    .fc3{animation:float2 3.5s ease-in-out infinite alternate}
+    @keyframes float2{from{transform:translateY(-50%)}to{transform:translateY(calc(-50% - 9px))}}
+    .fc-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mu2);margin-bottom:6px}
+    .fc-val{font-family:var(--disp);font-size:20px;font-weight:700;color:var(--ink)}
+    .fc-sub{font-size:11px;color:var(--mu);margin-top:2px}
+    .fc-ok{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#059669}
+    .fc-dot{width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 8px rgba(16,185,129,.5);animation:sp 2s ease-in-out infinite;flex-shrink:0}
+    .fc-tags{display:flex;gap:5px;flex-wrap:wrap}
+    .fc-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:rgba(109,40,217,.08);color:#6D28D9;border:1px solid rgba(109,40,217,.15)}
+
+    /* TRUST STRIP */
+    .trust{position:relative;z-index:1;padding:28px 0;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);overflow:hidden;background:var(--surf)}
+    .trust-lbl{text-align:center;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mu2);margin-bottom:18px}
+    .mwrap{overflow:hidden;position:relative}
+    .mwrap::before,.mwrap::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:1;pointer-events:none}
+    .mwrap::before{left:0;background:linear-gradient(to right,var(--surf),transparent)}
+    .mwrap::after{right:0;background:linear-gradient(to left,var(--surf),transparent)}
+    .mtrack{display:flex;width:max-content;animation:marq 28s linear infinite}
+    .mtrack:hover{animation-play-state:paused}
+    @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .mitem{display:flex;align-items:center;gap:9px;padding:0 36px;font-size:13px;font-weight:500;color:rgba(13,12,26,.52);white-space:nowrap}
+    .msep{width:3px;height:3px;border-radius:50%;background:rgba(13,12,26,.22);flex-shrink:0;margin:0 4px}
+
+    /* SECTIONS */
+    .section{position:relative;z-index:1;padding:96px 0}
+    .slbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--mu)}
+    .slbl::before{content:'';display:inline-block;width:18px;height:1px;background:currentColor}
+    .slbl.v{color:var(--v)}.slbl.v::before{background:var(--v)}
+    .stitle{font-family:var(--disp);font-size:clamp(28px,3.6vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1.1;color:var(--ink);max-width:580px;margin-bottom:52px}
+    .stitle.wide{max-width:800px}
+
+    /* SERVICES BENTO */
+    .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .bc{background:var(--surf);border:1px solid var(--bd);border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--sh);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease,border-color .28s ease}
+    .bc:hover{transform:translateY(-5px);box-shadow:var(--sh2);border-color:var(--bd2)}
+    .bc.span2{grid-column:span 2}
+    .bc.ft{background:linear-gradient(135deg,rgba(109,40,217,.05) 0%,rgba(37,99,235,.03) 100%);border-color:rgba(109,40,217,.15)}
+    .bc.ft:hover{border-color:rgba(109,40,217,.3);box-shadow:0 2px 6px rgba(109,40,217,.08),0 16px 48px rgba(109,40,217,.1)}
+    .bico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(13,12,26,.04);border:1px solid var(--bd)}
+    .bc.ft .bico{background:rgba(109,40,217,.08);border-color:rgba(109,40,217,.18)}
+    .bname{font-family:var(--disp);font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+    .bdesc{font-size:14px;line-height:1.7;color:var(--mu);flex:1;font-weight:400}
+    .btags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+    .btag{font-size:11px;font-weight:500;padding:4px 10px;border-radius:100px;background:rgba(13,12,26,.05);border:1px solid var(--bd);color:var(--mu)}
+    .bc.ft .btag{background:rgba(109,40,217,.07);border-color:rgba(109,40,217,.15);color:var(--v)}
+    .blink{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--v);text-decoration:none;margin-top:auto;transition:gap .18s ease}
+    .blink:hover{gap:9px}
+    .blink:focus-visible{outline:2px solid var(--v);border-radius:3px}
+
+    /* VALUE PROPS */
+    .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+    .vcard{background:var(--surf);border:1px solid var(--bd);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease}
+    .vcard:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
+    .vico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);background:rgba(13,12,26,.04)}
+    .vt{font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:-.015em;color:var(--ink)}
+    .vd{font-size:14px;line-height:1.7;color:var(--mu);font-weight:400}
+
+    /* WORK */
+    .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .wcard{background:var(--surf);border:1px solid var(--bd);border-radius:20px;overflow:hidden;box-shadow:var(--sh);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease,border-color .28s ease;display:flex;flex-direction:column}
+    .wcard:hover{transform:translateY(-5px);box-shadow:var(--sh2);border-color:var(--bd2)}
+    .wimg{height:190px;position:relative;overflow:hidden;flex-shrink:0}
+    .wimg-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+    .wui{width:80%;background:rgba(13,15,30,.85);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;backdrop-filter:blur(8px)}
+    .wbar{height:4px;border-radius:2px;background:rgba(255,255,255,.15);overflow:hidden;margin-bottom:7px}
+    .wbarf{height:100%;border-radius:2px}
+    .wbody{padding:22px;display:flex;flex-direction:column;gap:11px;flex:1}
+    .wtag{display:inline-flex;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;align-self:flex-start;background:rgba(13,12,26,.05);color:var(--mu);border:1px solid var(--bd)}
+    .wname{font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:-.015em;color:var(--ink);line-height:1.2}
+    .wdesc{font-size:13px;line-height:1.65;color:var(--mu);flex:1;font-weight:400}
+    .wstack{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+    .wstag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;background:rgba(13,12,26,.04);color:var(--mu);border:1px solid var(--bd)}
+    .wresult{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#059669}
+
+    /* PROCESS */
+    .pshell{background:var(--ink);border-radius:24px;padding:52px 48px}
+    .phead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px}
+    .ptitle{font-family:var(--disp);font-size:clamp(26px,3.2vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#fff}
+    .psub{font-size:14px;line-height:1.65;color:rgba(255,255,255,.42);max-width:220px;text-align:right;font-weight:400}
+    .psteps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;position:relative}
+    .pline{position:absolute;top:22px;left:11%;width:78%;height:2px;pointer-events:none;z-index:0}
+    .ppath{stroke:url(#pg);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;opacity:.4}
+    .ppath.drawn{animation:dl 1.4s cubic-bezier(.22,1,.36,1) forwards}
+    @keyframes dl{to{stroke-dashoffset:0}}
+    .ps{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:26px 20px;display:flex;flex-direction:column;gap:11px;position:relative;z-index:1;transition:background .22s ease}
+    .ps:hover{background:rgba(255,255,255,.08)}
+    .pn{font-family:var(--disp);font-size:11px;font-weight:700;background:linear-gradient(135deg,#C4B5FD,#93C5FD);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.08em}
+    .pt{font-family:var(--disp);font-size:16px;font-weight:700;color:#fff;letter-spacing:-.01em}
+    .pd{font-size:13px;line-height:1.65;color:rgba(255,255,255,.45);font-weight:400}
+    .ptag2{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;color:rgba(255,255,255,.35);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:3px 8px;align-self:flex-start;margin-top:auto}
+
+    /* TESTIMONIALS */
+    .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .tcard{background:var(--surf);border:1px solid var(--bd);border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:18px;box-shadow:var(--sh);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease}
+    .tcard:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
+    .tstars{display:flex;gap:3px}
+    .tstar{color:#F59E0B;font-size:14px}
+    .tq{font-size:15px;line-height:1.75;color:rgba(13,12,26,.72);font-style:italic;flex:1;font-weight:400}
+    .tq::before{content:'\201C'}
+    .tq::after{content:'\201D'}
+    .tau{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--bd)}
+    .tav{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:13px;font-weight:700;color:#fff}
+    .tnm{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--ink)}
+    .trl{font-size:12px;color:var(--mu);font-weight:400}
+
+    /* CONTACT */
+    .cshell{background:var(--surf);border:1px solid var(--bd);border-radius:24px;padding:60px 52px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;box-shadow:var(--sh)}
+    .ctitle{font-family:var(--disp);font-size:clamp(28px,3.4vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1.1;color:var(--ink);margin-bottom:14px}
+    .csub{font-size:15px;line-height:1.7;color:var(--mu);margin-bottom:24px;font-weight:400}
+    .cmail{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:var(--v);text-decoration:none;opacity:.8;transition:opacity .18s ease}
+    .cmail:hover{opacity:1}
+    .tlist{display:flex;flex-direction:column;gap:10px;margin-top:32px}
+    .ti{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mu);font-weight:400}
+
+    /* FORM */
+    .cform{display:flex;flex-direction:column;gap:13px}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .ff{display:flex;flex-direction:column;gap:5px}
+    .fl{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--mu2);text-transform:uppercase}
+    .fi,.fse,.fta{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;font-family:var(--font);color:var(--ink);width:100%;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .18s ease,background .18s ease;font-weight:400}
+    .fi::placeholder,.fta::placeholder{color:var(--mu2)}
+    .fi:focus,.fse:focus,.fta:focus{border-color:rgba(109,40,217,.4);background:var(--surf);box-shadow:0 0 0 3px rgba(109,40,217,.08)}
+    .fse{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 5l4 4 4-4' stroke='rgba(13,12,26,.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;background-color:var(--bg)}
+    .fse option{background:var(--surf);color:var(--ink)}
+    .fta{resize:none;height:100px}
+    .fsub{width:100%;padding:13px;border-radius:10px;background:var(--ink);color:#fff;font-size:15px;font-weight:600;font-family:var(--font);border:none;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 12px rgba(13,12,26,.2);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease;cursor:pointer}
+    .fsub:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,12,26,.25)}
+    .fsub:active{transform:scale(.98)}
+    .fsub:focus-visible{outline:2px solid var(--v);outline-offset:3px}
+    #fsuccess{display:none;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:32px 20px}
+    #fsuccess.sh{display:flex}
+    .sring{width:56px;height:56px;border-radius:50%;background:rgba(109,40,217,.08);border:1px solid rgba(109,40,217,.2);display:flex;align-items:center;justify-content:center}
+    .stt{font-family:var(--disp);font-size:22px;font-weight:700;color:var(--ink)}
+    .sss{font-size:14px;color:var(--mu);max-width:280px;line-height:1.6;font-weight:400}
 
     /* FOOTER */
-    footer {
-      background: var(--ink);
+    footer{position:relative;z-index:1;background:var(--ink);border-top:1px solid var(--bd)}
+    .fi2{max-width:1280px;margin:0 auto;padding:60px 24px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+    .ft{font-size:13px;line-height:1.7;color:rgba(255,255,255,.38);max-width:260px;margin-top:12px;font-weight:400}
+    .fem{display:inline-flex;align-items:center;gap:6px;margin-top:20px;font-size:13px;font-weight:500;color:rgba(255,255,255,.4);text-decoration:none;transition:color .18s ease}
+    .fem:hover{color:#fff}
+    .fcol h4{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:16px}
+    .fcol ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .fcol ul a{font-size:13px;color:rgba(255,255,255,.42);text-decoration:none;transition:color .18s ease;font-weight:400}
+    .fcol ul a:hover{color:#fff}
+    .fbot{max-width:1280px;margin:0 auto;padding:20px 24px 32px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
+    .fcp{font-size:12px;color:rgba(255,255,255,.2);font-weight:400}
+    footer .logo{color:#fff}
+
+    /* REVEAL — elements always visible; animation fires as enhancement when .vis is added */
+    @keyframes revealUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    .rev.vis{animation:revealUp .6s cubic-bezier(.22,1,.36,1) both}
+    .rev.vis.d1{animation-delay:.07s}.rev.vis.d2{animation-delay:.14s}
+    .rev.vis.d3{animation-delay:.21s}.rev.vis.d4{animation-delay:.28s}
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      .hgrid{grid-template-columns:1fr;gap:48px}.hvisual{height:340px}
+      .bento{grid-template-columns:1fr 1fr}.bc.span2{grid-column:span 2}
+      .work-grid{grid-template-columns:1fr 1fr}
+      .psteps{grid-template-columns:repeat(2,1fr)}
+      .tgrid{grid-template-columns:1fr 1fr}
+      .cshell{grid-template-columns:1fr;gap:44px}
+      .fi2{grid-template-columns:1fr 1fr;gap:32px}
+      .vgrid{grid-template-columns:repeat(3,1fr)}
     }
-
-    .footer-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 56px 24px 40px;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 48px;
-      align-items: start;
+    @media(max-width:768px){
+      .nlinks{display:none}.hburg{display:flex}
+      .hero{padding:110px 0 60px;min-height:auto}
+      .hgrid{grid-template-columns:1fr}
+      .hvisual{height:280px}.hvisual .fc{display:none}
+      .bento{grid-template-columns:1fr}.bc.span2{grid-column:1}
+      .vgrid{grid-template-columns:1fr 1fr}
+      .work-grid{grid-template-columns:1fr}
+      .pshell{padding:36px 24px;border-radius:18px}
+      .phead{flex-direction:column;align-items:flex-start;gap:10px}.psub{text-align:left;max-width:100%}
+      .psteps{grid-template-columns:1fr 1fr}
+      .tgrid{grid-template-columns:1fr}
+      .cshell{padding:36px 28px;border-radius:18px;gap:36px}
+      .fi2{grid-template-columns:1fr;padding:40px 16px 28px}
+      .fbrand{grid-column:1/-1}
     }
-
-    .footer-brand {}
-
-    .footer-tagline {
-      font-size: 13px;
-      color: rgba(255,255,255,0.45);
-      margin-top: 12px;
-      max-width: 260px;
-      line-height: 1.7;
-    }
-
-    .footer-email {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      transition: color 0.18s ease;
-    }
-
-    .footer-email:hover { color: #fff; }
-
-    .footer-links { display: contents; }
-
-    .footer-col h4 {
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 16px;
-    }
-
-    .footer-col ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .footer-col ul a {
-      font-size: 13px;
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      transition: color 0.18s ease;
-    }
-
-    .footer-col ul a:hover { color: #fff; }
-
-    .footer-bottom {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 20px 24px 32px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer-copy {
-      font-size: 12px;
-      color: rgba(255,255,255,0.28);
-    }
-
-    footer .logo { color: #fff; }
-    footer .logo-bracket { background: var(--lime); color: var(--ink); }
-
-    /* SVG icon helpers */
-    .icon { display: inline-block; }
-
-    /* ── Hamburger button (mobile nav) ── */
-    .nav-hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .nav-hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--ink);
-      border-radius: 2px;
-      transition: transform 0.22s ease, opacity 0.22s ease;
-    }
-
-    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
-    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-    /* ── Mobile drawer ── */
-    .nav-drawer {
-      display: none;
-      flex-direction: column;
-      padding: 16px 20px 24px;
-      gap: 4px;
-      border-top: 1px solid rgba(10,10,10,0.08);
-      background: var(--surface);
-    }
-
-    .nav-drawer.open { display: flex; }
-
-    .nav-drawer a {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--ink);
-      text-decoration: none;
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(10,10,10,0.06);
-      opacity: 0.7;
-    }
-
-    .nav-drawer a:last-child { border-bottom: none; opacity: 1; font-weight: 600; }
-    .nav-drawer a:hover { opacity: 1; }
-
-    /* ── Large tablet (≤1024px) ── */
-    @media (max-width: 1024px) {
-      .hero { grid-template-columns: 1fr 1fr; gap: 28px; }
-      .process-steps { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .cta-section { padding: 52px 40px; }
-      .footer-links { gap: 36px; }
-    }
-
-    /* ── Tablet (≤768px) ── */
-    @media (max-width: 768px) {
-      /* Nav */
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
-
-      /* Hero */
-      .hero {
-        grid-template-columns: 1fr;
-        gap: 36px;
-        padding: 48px 20px 40px;
-      }
-
-      h1.hero-headline { font-size: clamp(36px, 8vw, 52px); }
-
-      /* Show hero cards in a compact 2x2 on tablet */
-      .hero-right {
-        grid-template-columns: 1fr 1fr;
-        display: grid;
-      }
-
-      .hr-col:last-child { margin-top: 0; }
-
-      .stats-strip { gap: 24px; }
-
-      /* Services */
-      .services-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-
-      /* Process */
-      .process-wrapper { padding: 36px 28px; border-radius: 20px; }
-      .process-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .process-sub { text-align: left; max-width: 100%; }
-      .process-steps { grid-template-columns: 1fr 1fr; gap: 6px; }
-
-      /* Tools */
-      .tools-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .tools-grid { grid-template-columns: 1fr 1fr; }
-      .tool-card.featured { flex-direction: column; }
-
-      /* CTA */
-      .cta-section {
-        flex-direction: column;
-        padding: 44px 32px;
-        gap: 28px;
-        border-radius: 20px;
-      }
-
-      /* Footer */
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .footer-brand { grid-column: 1 / -1; }
-    }
-
-    /* ── Mobile (≤480px) ── */
-    @media (max-width: 480px) {
-      /* Nav */
-      .nav-inner { padding: 0 16px; }
-
-      /* Hero */
-      .hero { padding: 36px 16px 32px; gap: 32px; }
-      h1.hero-headline { font-size: clamp(32px, 9vw, 44px); }
-      .hero-sub { font-size: 14px; }
-
-      .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .btn-primary { width: 100%; justify-content: center; }
-
-      .stats-strip {
-        flex-wrap: wrap;
-        gap: 20px 32px;
-        margin-top: 36px;
-        padding-top: 24px;
-      }
-
-      /* Hero cards: stack into a single scrollable column */
-      .hero-right {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .hr-col { gap: 10px; }
-      .hcard { padding: 20px; }
-      .hcard-dark { min-height: auto; }
-      .hcard-white { min-height: auto; }
-
-      /* Services */
-      .services-grid { grid-template-columns: 1fr; gap: 10px; }
-      .service-card { padding: 24px; }
-
-      /* Process */
-      .process-wrapper { padding: 28px 20px; margin: 0; border-radius: 16px; }
-      .process-steps { grid-template-columns: 1fr; gap: 6px; }
-      .process-step { padding: 20px 18px; }
-
-      /* Tools */
-      .tools-grid { grid-template-columns: 1fr; }
-      .tool-card.featured { flex-direction: column; }
-
-      /* CTA */
-      .cta-section { padding: 36px 24px; border-radius: 16px; }
-      .cta-right { width: 100%; }
-      .btn-dark { width: 100%; justify-content: center; }
-
-      /* Footer */
-      .footer-inner { grid-template-columns: 1fr; padding: 40px 16px 28px; }
-      .footer-brand { grid-column: auto; }
-      .footer-bottom { padding: 16px 16px 24px; flex-direction: column; gap: 6px; text-align: center; }
-
-      /* Section padding */
-      .section { padding: 56px 16px; }
+    @media(max-width:480px){
+      .ni{padding:0 16px}.hero{padding:90px 0 48px}
+      .hacts{flex-direction:column;align-items:flex-start;gap:12px}.btn-dark{width:100%;justify-content:center}
+      .sbar{flex-wrap:wrap;gap:20px 32px}
+      .hvisual{height:220px}
+      .vgrid{grid-template-columns:1fr}
+      .psteps{grid-template-columns:1fr}.pshell{padding:28px 18px;border-radius:14px}
+      .frow{grid-template-columns:1fr}
+      .cshell{padding:28px 18px;border-radius:14px}
+      .fbot{flex-direction:column;gap:8px;text-align:center}
+      .section{padding:72px 0}
+      #fcta{bottom:20px;right:16px}
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-inner">
-      <a href="#" class="logo">
-        tezlo <span class="logo-bracket">labs</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#process">How we work</a></li>
-        <li><a href="#tools">Tools</a></li>
-        <li><a href="#contact" class="nav-cta">Let's talk</a></li>
-      </ul>
-      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-    <div class="nav-drawer" id="nav-drawer">
-      <a href="#services" class="drawer-link">Services</a>
-      <a href="#process" class="drawer-link">How we work</a>
-      <a href="#tools" class="drawer-link">Tools</a>
-      <a href="#contact" class="drawer-link">Let's talk →</a>
-    </div>
-  </nav>
+<div id="sbar"></div>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-left">
-      <h1 class="hero-headline reveal">We build tools your team actually uses.</h1>
-      <p class="hero-sub reveal reveal-d1">Tezlo Labs specialises in custom internal tools — Retool apps, data pipelines, and workflow automation — so your team moves faster without the overhead.</p>
-      <div class="hero-actions reveal reveal-d2">
-        <a href="#contact" class="btn-primary">
-          Start a project
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a href="#process" class="btn-secondary">
-          How it works
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </div>
+<a href="#contact" id="fcta">
+  Get a quote
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5h10M6.5 1.5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</a>
 
-      <div class="stats-strip reveal reveal-d3">
-        <div class="stat-item">
-          <div class="stat-number">60+<span>tools</span></div>
-          <div class="stat-label">delivered</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">40<span>k hrs</span></div>
-          <div class="stat-label">saved for clients</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">$120<span>/hr</span></div>
-          <div class="stat-label">flat hourly rate</div>
-        </div>
-      </div>
-    </div>
+<!-- Background orbs -->
+<div class="bgl" aria-hidden="true">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#6D28D9"/>
+        <stop offset="100%" stop-color="#2563EB"/>
+      </linearGradient>
+    </defs>
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r=".8" fill="rgba(13,12,26,0.04)"/>
+    </pattern>
+    <rect width="100%" height="100%" fill="url(#dots)"/>
+  </svg>
+</div>
 
-    <div class="hero-right">
-      <!-- Left column: dark card (tall) + cream card (shorter) -->
-      <div class="hr-col">
-        <div class="hcard hcard-dark hcard-reveal" style="transition-delay:0.1s">
-          <div class="hcard-row">
-            <div class="hcard-pill">Most Popular</div>
-            <div class="hcard-num">01</div>
-          </div>
-          <div class="hcard-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="2" stroke="#C8FF57" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="2" stroke="#C8FF57" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="2" stroke="#C8FF57" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="2" stroke="rgba(200,255,87,0.4)" stroke-width="1.5"/></svg>
-          </div>
-          <div class="hcard-title">Retool<br/>Development</div>
-          <div class="hcard-sub">Admin panels, ops dashboards, and approval workflows — built in Retool and shipped in days.</div>
-          <button class="hcard-btn">See examples →</button>
-        </div>
+<!-- NAV -->
+<nav id="nav">
+  <div class="ni">
+    <a href="#" class="logo">tezlo <span class="lchip">labs</span></a>
+    <ul class="nlinks">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#contact"><button class="ncta" type="button">Get a quote</button></a></li>
+    </ul>
+    <button class="hburg" id="hburg" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="ndraw" id="ndraw">
+    <a href="#services">Services</a>
+    <a href="#work">Work</a>
+    <a href="#process">Process</a>
+    <a href="#contact">Get a quote →</a>
+  </div>
+</nav>
 
-        <div class="hcard hcard-cream hcard-reveal" style="transition-delay:0.22s">
-          <div class="hcard-row">
-            <div class="hcard-pill">Automation</div>
-          </div>
-          <div class="hcard-title" style="font-size:17px;">Stop doing things<br/>manually</div>
-          <div class="hcard-sub">We map your workflows, find the friction, and build automations that just run.</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hgrid">
+      <div>
+        <h1 class="hh rev">We build software <span class="gt">that solves</span> real problems.</h1>
+        <p class="hsub rev d1">From MVPs to full-scale internal platforms — Tezlo Labs designs, builds, and ships custom software your team will actually rely on. In weeks, not months.</p>
+        <div class="hacts rev d2">
+          <a href="#contact" class="btn-dark">
+            Start your project
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#work" class="btn-ghost">
+            View our work
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="sbar rev d3">
+          <div><div class="sv"><span class="count" data-to="80">0</span>+<span class="su">&thinsp;projects</span></div><div class="sl">delivered</div></div>
+          <div><div class="sv">3–6<span class="su">&thinsp;wks</span></div><div class="sl">avg. delivery</div></div>
+          <div><div class="sv"><span class="count" data-to="97">0</span>%</div><div class="sl">client satisfaction</div></div>
         </div>
       </div>
 
-      <!-- Right column: lime card + white card, offset lower -->
-      <div class="hr-col">
-        <div class="hcard hcard-green hcard-reveal" style="transition-delay:0.18s">
-          <div class="hcard-row">
-            <div class="hcard-pill">Dashboards</div>
+      <!-- Hero visual: operations dashboard -->
+      <div class="hvisual rev d1">
+        <div class="hv-main">
+          <!-- Window chrome -->
+          <div class="hv-chrome">
+            <div class="hv-dots">
+              <span class="hd" style="background:#EF4444"></span>
+              <span class="hd" style="background:#F59E0B"></span>
+              <span class="hd" style="background:#10B981"></span>
+            </div>
+            <div class="hv-wintitle">Operations · Overview</div>
+            <div class="hv-badge-live"><span class="hv-live-dot"></span>Live</div>
           </div>
-          <div class="hcard-title" style="font-size:17px;">Custom dashboards<br/>& reports</div>
-          <div class="hcard-sub">See your data clearly — not just store it. Connected to your existing stack.</div>
+          <!-- Sidebar + content -->
+          <div class="hv-split">
+            <div class="hv-side">
+              <div class="hv-nav active">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1.4" fill="#fff"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1.4" fill="rgba(255,255,255,.28)"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1.4" fill="rgba(255,255,255,.28)"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.4" fill="rgba(255,255,255,.28)"/></svg>
+              </div>
+              <div class="hv-nav">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 11.5l3.5-4 2.5 2.5L11 5.5l2 2.5" stroke="rgba(255,255,255,.32)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="1" width="13" height="13" rx="2" stroke="rgba(255,255,255,.12)" stroke-width="1.1"/></svg>
+              </div>
+              <div class="hv-nav">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="rgba(255,255,255,.32)" stroke-width="1.2"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="rgba(255,255,255,.32)" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="hv-nav-sep"></div>
+              <div class="hv-nav">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11M2 7.5h7M2 11h9" stroke="rgba(255,255,255,.22)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="hv-content">
+              <!-- KPI row -->
+              <div class="hv-kpis">
+                <div class="hv-kpi">
+                  <div class="hv-kpi-val">$2.4M</div>
+                  <div class="hv-kpi-lbl">Revenue MTD</div>
+                  <div class="hv-kpi-chg">↑ 18%</div>
+                </div>
+                <div class="hv-kpi">
+                  <div class="hv-kpi-val">1,284</div>
+                  <div class="hv-kpi-lbl">Orders</div>
+                  <div class="hv-kpi-chg">↑ 12%</div>
+                </div>
+                <div class="hv-kpi">
+                  <div class="hv-kpi-val">97%</div>
+                  <div class="hv-kpi-lbl">SLA met</div>
+                  <div class="hv-kpi-chg neutral">On target</div>
+                </div>
+              </div>
+              <!-- Bar chart -->
+              <div>
+                <div class="hv-chart-hd">Weekly revenue</div>
+                <div class="hv-bars-row">
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:44%;background:rgba(255,255,255,.13);animation-delay:.35s"></div></div><div class="hv-bar-x">W1</div></div>
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:61%;background:rgba(255,255,255,.13);animation-delay:.45s"></div></div><div class="hv-bar-x">W2</div></div>
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:37%;background:rgba(255,255,255,.13);animation-delay:.55s"></div></div><div class="hv-bar-x">W3</div></div>
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:79%;background:rgba(255,255,255,.13);animation-delay:.65s"></div></div><div class="hv-bar-x">W4</div></div>
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:54%;background:rgba(255,255,255,.13);animation-delay:.75s"></div></div><div class="hv-bar-x">W5</div></div>
+                  <div class="hv-bar-col"><div class="hv-bar-track"><div class="hv-bar-f" style="height:92%;background:linear-gradient(180deg,#7C3AED,#2563EB);animation-delay:.85s"></div></div><div class="hv-bar-x cur">W6</div></div>
+                </div>
+              </div>
+              <!-- Status footer -->
+              <div class="hv-statusrow">
+                <div class="hv-sitem"><span class="hv-sdot"></span>All systems online</div>
+                <div class="hv-chips-sm"><span class="hv-chip-sm">Retool</span><span class="hv-chip-sm">PostgreSQL</span></div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="hcard hcard-white hcard-reveal" style="transition-delay:0.3s">
-          <div class="hcard-row">
-            <div class="hcard-pill">Integration</div>
-            <div class="hcard-num">02</div>
-          </div>
-          <div class="hcard-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="2.5" stroke="#0A0A0A" stroke-width="1.5"/><circle cx="15" cy="5" r="2.5" stroke="#0A0A0A" stroke-width="1.5"/><circle cx="15" cy="15" r="2.5" stroke="#0A0A0A" stroke-width="1.5"/><path d="M7.5 10h3l2-5M10.5 10l2 5" stroke="#0A0A0A" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </div>
-          <div class="hcard-title" style="font-size:17px;">No more<br/>spreadsheets</div>
-          <div class="hcard-sub">We connect your tools so data flows without the copy-paste.</div>
-          <button class="hcard-btn">Get started →</button>
+        <!-- Floating badges -->
+        <div class="fc fc1">
+          <div class="fc-lbl">Sprint status</div>
+          <div class="fc-ok"><span class="fc-dot"></span>Deployed</div>
+          <div class="fc-sub">Week 3 of 4</div>
+        </div>
+        <div class="fc fc2">
+          <div class="fc-lbl">Time saved</div>
+          <div class="fc-val">18h<span style="font-size:14px;color:var(--mu)">/wk</span></div>
+        </div>
+        <div class="fc fc3">
+          <div class="fc-lbl">Stack</div>
+          <div class="fc-tags"><span class="fc-tag">React</span><span class="fc-tag">Node</span><span class="fc-tag">Postgres</span></div>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- SERVICES -->
-  <section id="services" class="section">
-    <div class="section-label reveal">What we do</div>
-    <div class="section-title reveal reveal-d1">Everything you need to move faster internally.</div>
-    <div class="services-grid">
+<!-- TRUST STRIP -->
+<div class="trust">
+  <div class="trust-lbl">Trusted by teams at</div>
+  <div class="mwrap">
+    <div class="mtrack">
+      <div class="mitem">Acme Logistics</div><span class="msep"></span>
+      <div class="mitem">NovaTech Group</div><span class="msep"></span>
+      <div class="mitem">Orbit Health</div><span class="msep"></span>
+      <div class="mitem">Meridian Finance</div><span class="msep"></span>
+      <div class="mitem">Vertex Retail</div><span class="msep"></span>
+      <div class="mitem">Clearpath SaaS</div><span class="msep"></span>
+      <div class="mitem">Stratos Capital</div><span class="msep"></span>
+      <div class="mitem">Ironclad Ops</div><span class="msep"></span>
+      <div class="mitem">Acme Logistics</div><span class="msep"></span>
+      <div class="mitem">NovaTech Group</div><span class="msep"></span>
+      <div class="mitem">Orbit Health</div><span class="msep"></span>
+      <div class="mitem">Meridian Finance</div><span class="msep"></span>
+      <div class="mitem">Vertex Retail</div><span class="msep"></span>
+      <div class="mitem">Clearpath SaaS</div><span class="msep"></span>
+      <div class="mitem">Stratos Capital</div><span class="msep"></span>
+      <div class="mitem">Ironclad Ops</div><span class="msep"></span>
+    </div>
+  </div>
+</div>
 
-      <div class="service-card reveal reveal-d1">
-        <div class="service-icon">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2.5" stroke="#C8FF57" stroke-width="1.5"/><rect x="12" y="2" width="8" height="8" rx="2.5" stroke="#C8FF57" stroke-width="1.5"/><rect x="2" y="12" width="8" height="8" rx="2.5" stroke="#C8FF57" stroke-width="1.5"/><rect x="12" y="12" width="8" height="8" rx="2.5" stroke="rgba(200,255,87,0.4)" stroke-width="1.5"/></svg>
+<!-- SERVICES -->
+<section id="services" class="section">
+  <div class="wrap">
+    <div class="slbl v rev">What we build</div>
+    <div class="stitle rev d1">Custom software for<br/>every stage of growth.</div>
+    <div class="bento">
+
+      <div class="bc ft rev d1">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="2" stroke="#6D28D9" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="2" stroke="#6D28D9" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="2" stroke="#6D28D9" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="2" stroke="rgba(109,40,217,0.4)" stroke-width="1.5"/></svg>
         </div>
-        <div class="service-name">Retool Development</div>
-        <div class="service-desc">Full-stack Retool apps that connect to your databases, APIs, and SaaS tools. Admin panels, ops dashboards, approval workflows — all designed for your exact team.</div>
-        <div class="service-tags">
-          <span class="tag">Admin panels</span>
-          <span class="tag">Dashboards</span>
-          <span class="tag">CRUD apps</span>
-          <span class="tag">Workflows</span>
+        <div class="bname">Custom Internal Tools</div>
+        <div class="bdesc">Build exactly the tool your team needs — not a product you have to contort your process around. Admin panels, approval flows, ops dashboards, done right.</div>
+        <div class="btags"><span class="btag">Admin panels</span><span class="btag">Approval workflows</span><span class="btag">Retool</span></div>
+      </div>
+
+      <div class="bc rev d2">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="rgba(13,12,26,0.55)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="bname">MVP Development</div>
+        <div class="bdesc">Turn a validated idea into a deployed, working product in 3–6 weeks. We scope tightly, cut the fluff, and ship what actually matters.</div>
+        <div class="btags"><span class="btag">3–6 weeks</span><span class="btag">Full-stack</span><span class="btag">Production-ready</span></div>
+      </div>
+
+      <div class="bc rev d1">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 14l5-5 4 4 4-5 3 3" stroke="rgba(13,12,26,0.55)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="bname">Dashboards &amp; Analytics</div>
+        <div class="bdesc">Surface the right data, at the right time, in a format your team will actually use. Connected to your existing stack — no migration required.</div>
+        <div class="btags"><span class="btag">Metabase</span><span class="btag">Looker Studio</span><span class="btag">Custom charts</span></div>
+      </div>
+
+      <div class="bc rev d2">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="2" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/><circle cx="15" cy="4" r="2" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/><circle cx="15" cy="16" r="2" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/><path d="M7 10h4l2-5M11 10l2 5" stroke="rgba(13,12,26,0.45)" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bname">Workflow Automation</div>
+        <div class="bdesc">Kill the repetitive manual work. We map your processes, find the friction points, and build automations that run reliably without babysitting.</div>
+        <div class="btags"><span class="btag">n8n</span><span class="btag">Make</span><span class="btag">Zapier</span><span class="btag">Python</span></div>
+      </div>
+
+      <div class="bc rev d3">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2v3M10 15v3M2 10h3M15 10h3" stroke="rgba(13,12,26,0.55)" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="3.5" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/></svg>
+        </div>
+        <div class="bname">API &amp; Integrations</div>
+        <div class="bdesc">Connect your tools into one coherent system. REST APIs, webhooks, middleware — so data flows exactly where it needs to go.</div>
+        <div class="btags"><span class="btag">REST APIs</span><span class="btag">Webhooks</span><span class="btag">ETL</span></div>
+      </div>
+
+      <div class="bc rev d4">
+        <div class="bico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="12" rx="2.5" stroke="rgba(13,12,26,0.55)" stroke-width="1.5"/><path d="M6 17h8M10 15v2" stroke="rgba(13,12,26,0.55)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bname">SaaS Development</div>
+        <div class="bdesc">Build scalable, multi-tenant product foundations with the right architecture from day one. Auth, billing, core product — done right.</div>
+        <div class="btags"><span class="btag">Next.js</span><span class="btag">Stripe</span><span class="btag">Multi-tenant</span></div>
+      </div>
+
+    </div>
+
+    <!-- Value props -->
+    <div class="vgrid">
+      <div class="vcard rev d1">
+        <div class="vico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6L10 2z" stroke="var(--v)" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="vt">Fast delivery</div>
+        <div class="vd">Most projects ship in 3–8 weeks. We work in tight sprints with weekly demos so you always know exactly where things stand.</div>
+      </div>
+      <div class="vcard rev d2">
+        <div class="vico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8z" stroke="var(--b)" stroke-width="1.4"/><path d="M7 10l2 2 4-4" stroke="var(--b)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="vt">Senior engineers only</div>
+        <div class="vd">Every project is designed and built by experienced engineers. No outsourcing, no juniors learning on your dime.</div>
+      </div>
+      <div class="vcard rev d3">
+        <div class="vico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2.5" stroke="rgba(13,12,26,.55)" stroke-width="1.4"/><path d="M6 9h8M6 12h5" stroke="rgba(13,12,26,.55)" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="vt">Fixed-scope pricing</div>
+        <div class="vd">You know exactly what you're getting and what it costs before we start. No surprise invoices, no scope creep.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED WORK -->
+<section id="work" class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="slbl rev">Featured work</div>
+    <div class="stitle rev d1">Problems we've solved<br/>for real teams.</div>
+    <div class="work-grid">
+
+      <div class="wcard rev d1">
+        <div class="wimg" style="background:linear-gradient(135deg,#1A1B2E,#0F1A38)">
+          <div class="wimg-inner">
+            <div class="wui">
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:10px;color:rgba(255,255,255,.38);font-weight:500;letter-spacing:.05em;text-transform:uppercase">Revenue MTD</span><span style="font-size:13px;font-weight:700;color:#6EE7B7">+18%</span></div>
+              <div class="wbar"><div class="wbarf" style="width:82%;background:linear-gradient(90deg,#6D28D9,#2563EB)"></div></div>
+              <div class="wbar"><div class="wbarf" style="width:64%;background:linear-gradient(90deg,#2563EB,#06B6D4)"></div></div>
+              <div class="wbar" style="margin-bottom:0"><div class="wbarf" style="width:91%;background:linear-gradient(90deg,#6D28D9,#2563EB)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <span class="wtag">Internal Tool</span>
+          <div class="wname">Ops Command Centre</div>
+          <div class="wdesc">A real-time operations dashboard for a 200-person logistics company. Replaced 11 spreadsheets and 3 disconnected BI tools with one unified view.</div>
+          <div class="wresult"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Reporting time cut by 80%</div>
+          <div class="wstack"><span class="wstag">Retool</span><span class="wstag">PostgreSQL</span><span class="wstag">REST APIs</span></div>
         </div>
       </div>
 
-      <div class="service-card reveal reveal-d2">
-        <div class="service-icon">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="#0A0A0A" stroke-width="1.5"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2M5.64 5.64l1.41 1.41M14.95 14.95l1.41 1.41M5.64 16.36l1.41-1.41M14.95 7.05l1.41-1.41" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="wcard rev d2">
+        <div class="wimg" style="background:linear-gradient(135deg,#0F1D38,#0C1A30)">
+          <div class="wimg-inner">
+            <div class="wui">
+              <div style="font-size:10px;color:rgba(255,255,255,.38);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:9px">Customer Portal</div>
+              <div style="display:flex;gap:6px;margin-bottom:7px">
+                <div style="flex:1;height:26px;border-radius:5px;background:rgba(255,255,255,.07)"></div>
+                <div style="flex:1;height:26px;border-radius:5px;background:rgba(255,255,255,.07)"></div>
+              </div>
+              <div style="height:28px;border-radius:6px;background:linear-gradient(90deg,rgba(109,40,217,.7),rgba(37,99,235,.7));display:flex;align-items:center;justify-content:center">
+                <span style="font-size:11px;font-weight:600;color:#fff">Get started →</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="service-name">Process Automation</div>
-        <div class="service-desc">Identify and automate the repetitive manual work slowing your team down. We map your workflows, find the friction, and build reliable automations that run without babysitting.</div>
-        <div class="service-tags">
-          <span class="tag">Zapier / Make</span>
-          <span class="tag">n8n</span>
-          <span class="tag">Custom scripts</span>
+        <div class="wbody">
+          <span class="wtag">MVP</span>
+          <div class="wname">Self-Serve Customer Portal</div>
+          <div class="wdesc">Zero-to-deployed in 4 weeks. A full self-serve portal with billing management, support ticketing, and usage analytics for a B2B SaaS company.</div>
+          <div class="wresult"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Support tickets down 40%</div>
+          <div class="wstack"><span class="wstag">Next.js</span><span class="wstag">Stripe</span><span class="wstag">Supabase</span></div>
         </div>
       </div>
 
-      <div class="service-card reveal reveal-d3">
-        <div class="service-icon">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 16l5-5 4 4 5-6 4 4" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="wcard rev d3">
+        <div class="wimg" style="background:linear-gradient(135deg,#071A18,#0A1A24)">
+          <div class="wimg-inner">
+            <div class="wui">
+              <div style="font-size:10px;color:rgba(255,255,255,.38);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:9px">Inventory Levels</div>
+              <div style="display:flex;align-items:flex-end;gap:5px;height:44px">
+                <div style="flex:1;height:32%;background:rgba(6,182,212,.4);border-radius:3px 3px 0 0"></div>
+                <div style="flex:1;height:60%;background:rgba(6,182,212,.55);border-radius:3px 3px 0 0"></div>
+                <div style="flex:1;height:44%;background:rgba(6,182,212,.4);border-radius:3px 3px 0 0"></div>
+                <div style="flex:1;height:82%;background:rgba(6,182,212,.65);border-radius:3px 3px 0 0"></div>
+                <div style="flex:1;height:55%;background:rgba(6,182,212,.45);border-radius:3px 3px 0 0"></div>
+                <div style="flex:1;height:92%;background:rgba(109,40,217,.7);border-radius:3px 3px 0 0"></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="service-name">Data & Analytics</div>
-        <div class="service-desc">Build pipelines that bring your data together, clean it, and surface it in dashboards your team will actually check. Connected to your existing stack — no migration required.</div>
-        <div class="service-tags">
-          <span class="tag">ETL pipelines</span>
-          <span class="tag">Metabase</span>
-          <span class="tag">dbt</span>
-          <span class="tag">Looker Studio</span>
+        <div class="wbody">
+          <span class="wtag">Automation</span>
+          <div class="wname">Inventory Intelligence</div>
+          <div class="wdesc">Automated inventory tracking, demand forecasting, and supplier comms for a D2C brand doing £5M/yr. Built on n8n and Python with Postgres.</div>
+          <div class="wresult"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>20 hrs/week saved</div>
+          <div class="wstack"><span class="wstag">Python</span><span class="wstag">n8n</span><span class="wstag">PostgreSQL</span></div>
         </div>
       </div>
 
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PROCESS -->
-  <section id="process" style="padding: 0 20px 72px; max-width: 1280px; margin: 0 auto;">
-    <div class="process-wrapper">
-      <div class="process-header">
+<!-- PROCESS -->
+<section id="process" class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="pshell rev">
+      <div class="phead">
         <div>
-          <div class="section-label" style="color: rgba(255,255,255,0.4);">How we work</div>
-          <div class="process-title">From brief to<br/>deployed — fast.</div>
+          <div class="slbl" style="color:rgba(255,255,255,.35);margin-bottom:12px">How we work</div>
+          <div class="ptitle">From brief to<br/>deployed — fast.</div>
         </div>
-        <div class="process-sub">Most internal tools are live within 1–3 weeks. No long engagements, no bloated scope.</div>
+        <div class="psub">Most projects ship in 3–8 weeks. No sprawling retainers or endless discovery phases.</div>
       </div>
-      <div class="process-steps">
-        <div class="process-step reveal reveal-d1">
-          <div class="step-num">01</div>
-          <div class="step-title">Discovery call</div>
-          <div class="step-desc">We spend 30–60 minutes understanding your process, your data sources, and what success looks like.</div>
+      <div class="psteps" id="psteps">
+        <svg class="pline" viewBox="0 0 900 2" preserveAspectRatio="none">
+          <path class="ppath" id="pp" d="M0 1 L900 1" stroke="url(#pg)"/>
+        </svg>
+        <div class="ps rev d1"><div class="pn">01</div><div class="pt">Discovery</div><div class="pd">We dig into your problem, your team, and your data. We leave with a clear picture of what to build and why.</div><div class="ptag2">3–5 days</div></div>
+        <div class="ps rev d2"><div class="pn">02</div><div class="pt">Spec &amp; Design</div><div class="pd">Wireframes, architecture decisions, fixed scope. You approve before we write a single line of code.</div><div class="ptag2">~1 week</div></div>
+        <div class="ps rev d3"><div class="pn">03</div><div class="pt">Build</div><div class="pd">Iterative sprints with weekly demos. You see real progress early and can steer as we go.</div><div class="ptag2">2–6 weeks</div></div>
+        <div class="ps rev d4"><div class="pn">04</div><div class="pt">Ship &amp; Handoff</div><div class="pd">We deploy to production, write docs, and walk your team through the tool. Ongoing support available.</div><div class="ptag2">1–3 days</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="slbl rev">What clients say</div>
+    <div class="stitle rev d1">Don't take our<br/>word for it.</div>
+    <div class="tgrid">
+      <div class="tcard rev d1">
+        <div class="tstars"><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span></div>
+        <div class="tq">Tezlo Labs delivered in 3 weeks what our internal team had been trying to build for 6 months. The Retool dashboard they built is now used by every ops manager, every single day.</div>
+        <div class="tau">
+          <div class="tav" style="background:linear-gradient(135deg,#6D28D9,#2563EB)">SK</div>
+          <div><div class="tnm">Sarah K.</div><div class="trl">COO, Logistics startup · Series A</div></div>
         </div>
-        <div class="process-step reveal reveal-d2">
-          <div class="step-num">02</div>
-          <div class="step-title">Scoping & proposal</div>
-          <div class="step-desc">You get a clear proposal — what we'll build, how long, and what it costs. No hidden extras.</div>
+      </div>
+      <div class="tcard rev d2">
+        <div class="tstars"><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span></div>
+        <div class="tq">They understood the problem immediately and built exactly what we needed. No scope creep, no surprises, no hand-holding required. Just a great tool that works.</div>
+        <div class="tau">
+          <div class="tav" style="background:linear-gradient(135deg,#2563EB,#06B6D4)">MT</div>
+          <div><div class="tnm">Michael T.</div><div class="trl">Founder, HealthTech platform</div></div>
         </div>
-        <div class="process-step reveal reveal-d3">
-          <div class="step-num">03</div>
-          <div class="step-title">Build & iterate</div>
-          <div class="step-desc">We build in short sprints with frequent check-ins. You see progress early and can steer as we go.</div>
-        </div>
-        <div class="process-step reveal reveal-d4">
-          <div class="step-num">04</div>
-          <div class="step-title">Handoff & support</div>
-          <div class="step-desc">We hand over documentation, walk your team through the tool, and stay available for follow-on work.</div>
+      </div>
+      <div class="tcard rev d3">
+        <div class="tstars"><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span><span class="tstar">★</span></div>
+        <div class="tq">Our team saves 15+ hours a week thanks to the automation workflows Tezlo built. ROI was clear within the first month. We're already planning the next project.</div>
+        <div class="tau">
+          <div class="tav" style="background:linear-gradient(135deg,#059669,#2563EB)">PM</div>
+          <div><div class="tnm">Priya M.</div><div class="trl">Head of Operations, D2C brand</div></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- TOOLS WE USE -->
-  <section id="tools" class="section" style="padding-top: 0;">
-    <div class="tools-header">
-      <div class="tools-header-left">
-        <div class="section-label reveal">Tech stack</div>
-        <div class="section-title reveal reveal-d1" style="margin-bottom:0;">The tools we know inside out.</div>
-      </div>
-      <p class="tools-header-sub reveal reveal-d2">We're platform-agnostic but opinionated. We pick the right tool for your problem — not the one that's easiest for us.</p>
-    </div>
-    <div class="tools-grid">
-      <div class="tool-card featured reveal">
-        <div class="tool-logo">⚙️</div>
-        <div class="tool-info">
-          <div class="tool-name">Retool</div>
-          <div class="tool-desc">Our primary platform for internal tools — database queries, custom components, REST & GraphQL integrations, and multi-step workflows. We've shipped dozens of production Retool apps.</div>
+<!-- CONTACT -->
+<section id="contact" class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cshell rev">
+      <div>
+        <div class="slbl v" style="margin-bottom:18px">Get in touch</div>
+        <div class="ctitle">Ready to build something real?</div>
+        <div class="csub">Tell us what you need. We'll come back within 24 hours with a clear plan — no commitment required.</div>
+        <a href="mailto:hello@tezlolabs.com" class="cmail">hello@tezlolabs.com <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="tlist">
+          <div class="ti"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5l3.5 3.5 6.5-7" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Free 30-min discovery call, no obligation</div>
+          <div class="ti"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5l3.5 3.5 6.5-7" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Clear scoped proposal within 48 hours</div>
+          <div class="ti"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5l3.5 3.5 6.5-7" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Fixed pricing — no surprise invoices</div>
+          <div class="ti"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5l3.5 3.5 6.5-7" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Most projects ship in 3–8 weeks</div>
         </div>
-        <div class="tool-badge">Primary</div>
       </div>
-      <div class="tool-card reveal reveal-d1">
-        <div class="tool-logo">🔗</div>
-        <div class="tool-name">n8n / Make</div>
-        <div class="tool-desc">Workflow automation without writing code when you don't need to.</div>
-      </div>
-      <div class="tool-card reveal reveal-d2">
-        <div class="tool-logo">📊</div>
-        <div class="tool-name">Metabase</div>
-        <div class="tool-desc">Self-hosted BI that your ops team can actually use themselves.</div>
-      </div>
-      <div class="tool-card reveal reveal-d3">
-        <div class="tool-logo">⚡</div>
-        <div class="tool-name">Custom APIs</div>
-        <div class="tool-desc">Node.js / Python backends when off-the-shelf tools hit their limits.</div>
-      </div>
-      <div class="tool-card reveal reveal-d4">
-        <div class="tool-logo">🗃️</div>
-        <div class="tool-name">PostgreSQL / Supabase</div>
-        <div class="tool-desc">Solid, predictable data layers that scale with your team.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section id="contact" style="padding: 0 20px 72px; max-width: 1280px; margin: 0 auto;">
-    <div class="cta-section reveal">
-      <div class="cta-left">
-        <div class="cta-title">Ready to stop doing things manually?</div>
-        <div class="cta-sub">Tell us what's slowing your team down. We'll tell you exactly how we'd fix it — no commitment required.</div>
-      </div>
-      <div class="cta-right">
-        <a href="mailto:hello@tezlolabs.com" class="btn-dark">
-          Book a free discovery call
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a href="mailto:hello@tezlolabs.com" class="btn-outline">or email hello@tezlolabs.com →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="logo">tezlo <span class="logo-bracket">labs</span></div>
-        <div class="footer-tagline">Internal tools &amp; automation for teams that want to move faster without the overhead.</div>
-        <a href="mailto:hello@tezlolabs.com" class="footer-email">
-          hello@tezlolabs.com
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </div>
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>Services</h4>
-          <ul>
-            <li><a href="#services">Retool Development</a></li>
-            <li><a href="#services">Process Automation</a></li>
-            <li><a href="#services">Data &amp; Analytics</a></li>
-            <li><a href="#services">Custom Internal Tools</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#process">How we work</a></li>
-            <li><a href="#tools">Tech stack</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
+      <div>
+        <form id="cform" class="cform" novalidate>
+          <div class="frow">
+            <div class="ff"><label class="fl" for="fn">Your name</label><input class="fi" id="fn" name="name" type="text" placeholder="Jane Smith" required autocomplete="name"/></div>
+            <div class="ff"><label class="fl" for="fe">Email</label><input class="fi" id="fe" name="email" type="email" placeholder="jane@company.com" required autocomplete="email"/></div>
+          </div>
+          <div class="frow">
+            <div class="ff"><label class="fl" for="fco">Company</label><input class="fi" id="fco" name="company" type="text" placeholder="Acme Corp" autocomplete="organization"/></div>
+            <div class="ff"><label class="fl" for="fb">Budget range</label>
+              <select class="fse" id="fb" name="budget">
+                <option value="">Select a range…</option>
+                <option>Under £5k</option><option>£5k–£15k</option><option>£15k–£30k</option><option>£30k+</option><option>Not sure</option>
+              </select>
+            </div>
+          </div>
+          <div class="ff"><label class="fl" for="fty">What do you need?</label>
+            <select class="fse" id="fty" name="type">
+              <option value="">Select a service…</option>
+              <option>Custom Internal Tool</option><option>MVP Development</option><option>Dashboard / Analytics</option><option>Workflow Automation</option><option>API / Integrations</option><option>SaaS Development</option><option>Not sure — let's talk</option>
+            </select>
+          </div>
+          <div class="ff"><label class="fl" for="fm">Describe your project</label><textarea class="fta" id="fm" name="message" placeholder="What problem are you solving? What does your current setup look like?"></textarea></div>
+          <button type="submit" class="fsub" id="fsub"><span id="fstxt">Send message</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </form>
+        <div id="fsuccess">
+          <div class="sring"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 12l5 5L18 6" stroke="var(--v)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="stt">Message sent!</div>
+          <div class="sss">We'll be in touch within 24 hours. Looking forward to working together.</div>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Tezlo Labs. All rights reserved.</div>
-      <div class="footer-copy">Built for teams that move fast.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fi2">
+    <div class="fbrand">
+      <div class="logo">tezlo <span class="lchip">labs</span></div>
+      <div class="ft">Custom software for businesses that need real solutions. MVPs, internal tools, dashboards, and automation — built by a senior team who ships fast.</div>
+      <a href="mailto:hello@tezlolabs.com" class="fem">hello@tezlolabs.com <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
-  </footer>
+    <div class="fcol">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Custom Internal Tools</a></li>
+        <li><a href="#services">MVP Development</a></li>
+        <li><a href="#services">Dashboards &amp; Analytics</a></li>
+        <li><a href="#services">Workflow Automation</a></li>
+        <li><a href="#services">API &amp; Integrations</a></li>
+        <li><a href="#services">SaaS Development</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#work">Our work</a></li>
+        <li><a href="#process">How we work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h4>Get started</h4>
+      <ul>
+        <li><a href="#contact">Book a discovery call</a></li>
+        <li><a href="mailto:hello@tezlolabs.com">Send us an email</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fbot">
+    <div class="fcp">© 2026 Tezlo Labs Ltd. All rights reserved.</div>
+    <div class="fcp">Built for teams that want software that works.</div>
+  </div>
+</footer>
 
-  <script>
-    // Hamburger menu
-    const hamburger = document.getElementById('hamburger');
-    const drawer = document.getElementById('nav-drawer');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      drawer.classList.toggle('open');
-    });
-    // Close drawer when a link is clicked
-    drawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        drawer.classList.remove('open');
-      });
-    });
+<script>
+/* SCROLL PROGRESS */
+const sb = document.getElementById('sbar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  sb.style.width = (window.scrollY / h * 100) + '%';
+}, { passive: true });
 
-    // Scroll reveal observer
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
+/* NAV */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('sc', window.scrollY > 20), { passive: true });
 
-    // Observe all reveal elements
-    document.querySelectorAll('.reveal, .hcard-reveal').forEach(el => observer.observe(el));
+/* HAMBURGER */
+const hb = document.getElementById('hburg'), nd = document.getElementById('ndraw');
+hb.addEventListener('click', () => { hb.classList.toggle('op'); nd.classList.toggle('op'); });
+nd.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { hb.classList.remove('op'); nd.classList.remove('op'); }));
 
-    // Hero elements fire immediately on load (they're already in view)
-    window.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.hero-left .reveal').forEach((el, i) => {
-        setTimeout(() => el.classList.add('visible'), i * 90);
-      });
-      document.querySelectorAll('.hcard-reveal').forEach(el => {
-        // delay is set via inline style transition-delay, just mark visible
-        el.classList.add('visible');
-      });
-    });
-  </script>
+/* FLOATING CTA */
+const fc = document.getElementById('fcta'), heroEl = document.querySelector('.hero');
+window.addEventListener('scroll', () => {
+  fc.classList.toggle('sh', window.scrollY > heroEl.offsetTop + heroEl.offsetHeight - 80);
+}, { passive: true });
+
+/* REVEAL */
+const ro = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) { x.target.classList.add('vis'); ro.unobserve(x.target); }
+}), { threshold: .1 });
+document.querySelectorAll('.rev').forEach(el => ro.observe(el));
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.hero .rev').forEach((el, i) => setTimeout(() => el.classList.add('vis'), i * 100));
+});
+
+/* COUNT-UP */
+const co = new IntersectionObserver(e => e.forEach(el => {
+  if (!el.isIntersecting) return;
+  const t = el.target, v = parseInt(t.dataset.to), t0 = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - t0) / 1100, 1), ease = 1 - Math.pow(1 - p, 3);
+    t.textContent = Math.round(ease * v);
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+  co.unobserve(t);
+}), { threshold: .5 });
+document.querySelectorAll('.count').forEach(el => co.observe(el));
+
+/* PROCESS CONNECTOR */
+const pp = document.getElementById('pp');
+new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) pp.classList.add('drawn'); }), { threshold: .3 }).observe(document.getElementById('psteps'));
+
+/* MAGNETIC BUTTONS */
+document.querySelectorAll('.btn-dark, .fsub, .ncta').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const dx = (e.clientX - r.left - r.width / 2) * .18, dy = (e.clientY - r.top - r.height / 2) * .18;
+    btn.style.transform = `translate(${dx}px,${dy}px) translateY(-2px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
+
+/* CONTACT FORM */
+const form = document.getElementById('cform'), succ = document.getElementById('fsuccess'), fstxt = document.getElementById('fstxt'), fsub = document.getElementById('fsub');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const name = form.name.value.trim(), email = form.email.value.trim();
+  if (!name || !email) { form.elements[!name ? 'name' : 'email'].focus(); return; }
+  fstxt.textContent = 'Opening email…'; fsub.disabled = true;
+  const s = encodeURIComponent(`Project inquiry from ${name}${form.company.value ? ' — ' + form.company.value : ''}${form.type.value ? ' ('+form.type.value+')' : ''}`);
+  const b = encodeURIComponent(`Name: ${name}\nEmail: ${email}${form.company.value ? '\nCompany: '+form.company.value : ''}${form.budget.value ? '\nBudget: '+form.budget.value : ''}${form.type.value ? '\nService: '+form.type.value : ''}\n\n${form.message.value || '(no message)'}`);
+  window.location.href = `mailto:hello@tezlolabs.com?subject=${s}&body=${b}`;
+  setTimeout(() => { form.style.display = 'none'; succ.classList.add('sh'); }, 600);
+});
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
 </body>
 </html>
